@@ -1,0 +1,58 @@
+name: Build, Push and Deploy
+
+on:
+  push:
+    branches: [ "local" ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE: ${{ github.repository }}
+  DEPLOY_URL: https://run.atlas.net.in/deploy
+  DEPLOY_TOKEN: abcd1234
+  SERVICE_NAME: weather4u
+  SERVICE_PORT: 80
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Normalize image name
+        run: |
+          IMAGE_LC=$(echo "${IMAGE}" | tr '[:upper:]' '[:lower:]')
+          echo "IMAGE_LC=$IMAGE_LC" >> $GITHUB_ENV
+
+      - name: Set image tag (commit SHA)
+        run: |
+          echo "TAG=${GITHUB_SHA}" >> $GITHUB_ENV
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Build Docker Image
+        run: |
+          docker build \
+            -t ghcr.io/${IMAGE_LC}:${TAG} \
+            -t ghcr.io/${IMAGE_LC}:latest \
+            .
+
+      - name: Push Docker Images
+        run: |
+          docker push ghcr.io/${IMAGE_LC}:${TAG}
+          docker push ghcr.io/${IMAGE_LC}:latest
+
+      - name: Trigger Atlas Deployment
+        run: |
+          echo "Deploying ${IMAGE_LC}:${TAG}"
+          curl -X POST "${DEPLOY_URL}" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "token=${DEPLOY_TOKEN}" \
+            -d "image=ghcr.io/${IMAGE_LC}:${TAG}" \
+            -d "name=${SERVICE_NAME}" \
