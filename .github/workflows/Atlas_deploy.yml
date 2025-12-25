@@ -7,7 +7,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE: ${{ github.repository }}
-  DEPLOY_URL: https://run.atlas.net.in/deploy
+  DEPLOY_URL: https://run.atlas.in.net/deploy
   DEPLOY_TOKEN: abcd1234
   SERVICE_NAME: weather4u
   SERVICE_PORT: 80
