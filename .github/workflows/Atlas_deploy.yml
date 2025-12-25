@@ -2,7 +2,7 @@ name: Build, Push and Deploy
 
 on:
   push:
-    branches: [ "local" ]
+    branches: [ "main" ]
 
 env:
   REGISTRY: ghcr.io
