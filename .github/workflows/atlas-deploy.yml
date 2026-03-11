@@ -29,8 +29,8 @@ jobs:
       - name: Deploy to Atlas
         run: |
           curl -X POST https://run.atlas.in.net/deploy             -H "Content-Type: application/json"             -d '{
-              "token": "deploy_708cb6d638cca24b1e54ec2b9c48c8f2",
-              "domain": "weather4uwebapp55.atlas.in.net",
+              "token": "deploy_7dd0b3f4e3773ca23dc74f9973a74c8f",
+              "domain": "undefined",
               "image": "ghcr.io/${{ github.repository }}:latest",
               "name": "${{ github.event.repository.name }}"
             }'
